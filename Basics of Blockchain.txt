@@ -1,0 +1,29 @@
+Transactions - fields
+
+tx = transaction
+
+1. Nonce: tx count for the account
+2. Gas Price: price per unit of gas (in wei)
+3. Gas Limit: Max. limit the tx can use
+4. Value: amount in wei sent
+5. To: address of whom you are sending it to
+6. Data: data that is sent with the tx
+7. v,r,s: components of tx signature
+
+Every Transaction:
+
+Gas Price = Gas limit/Usage * Gas Fees
+Burnt
+tx savings
+
+1ETH = 1 x 10^9 Gwei
+1ETH = 1 x 10^18 wei
+
+
+Important Links:
+
+https://data.chain.link/
+https://docs.chain.link/
+https://faucets.chain.link/
+https://etherscan.io/
+https://sepolia.etherscan.io/
