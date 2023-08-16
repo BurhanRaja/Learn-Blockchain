@@ -1,0 +1,20 @@
+{
+  "name": "firstsetup",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "type": "module",
+  "scripts": {
+    "compile": "yarn solcjs --bin --abi --include-path node_modules/ --base-path . -o . SimpleStorage.sol",
+    "deploy": "npx tsc && node ./dist/deploy.js"
+  },
+  "dependencies": {
+    "ethers": "^6.7.1",
+    "solc": "0.8.18",
+    "ts-node": "^10.9.1"
+  },
+  "devDependencies": {
+    "dotenv": "^16.3.1",
+    "typescript": "^5.1.6"
+  }
+}
