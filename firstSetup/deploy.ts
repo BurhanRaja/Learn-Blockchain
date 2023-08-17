@@ -3,7 +3,7 @@ import fs from "fs";
 import "dotenv/config";
 
 const account_key = process.env.ACCOUNT_KEY as string;
-// const private_key = process.env.PRIVATE_KEY as string;
+const private_key = process.env.PRIVATE_KEY as string;
 const rpc_url = process.env.RPC_URL;
 const private_key_password = process.env.PRIVATE_KEY_PASSWORD as string;
 
@@ -18,11 +18,16 @@ interface Transaction {
 }
 
 async function main() {
-  const provider = new JsonRpcProvider(rpc_url);  
-  // const wallet = new Wallet(private_key, provider);
-  const encryptedJson = fs.readFileSync("./.encryptedKey.json", "utf8");
-  let wallet = Wallet.fromEncryptedJsonSync(encryptedJson, private_key_password);
-  wallet = wallet.connect(provider);
+  const provider = new JsonRpcProvider(rpc_url);
+  const wallet = new Wallet(private_key, provider);
+
+  // * Encrypted Json for Private Key
+  // const encryptedJson = fs.readFileSync("./.encryptedKey.json", "utf8");
+  // let wallet = Wallet.fromEncryptedJsonSync(
+  //   encryptedJson,
+  //   private_key_password
+  // );
+  // wallet = wallet.connect(provider);
 
   const abi = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.abi", "utf8");
   const binary = fs.readFileSync(
@@ -30,18 +35,25 @@ async function main() {
     "utf8"
   );
 
-  // * Creating a Contract and Deploying it
+  // Creating a Contract and Deploying it
   const contractFactory = new ContractFactory(abi, binary, wallet);
   console.log("Deploying the Contract. Please Wait....");
-  let contract: any = await contractFactory.deploy();
+  let contract = await contractFactory.deploy();
   await contract.waitForDeployment();
 
-  let currFavouriteNumber = await contract.retreive();
+  let address = await contract.getAddress();
+
+  // Contract Address
+  // console.log(`Contract deployed to ${address}`);
+  // 0xb3E098a35B987136a92356a0abB00Bc4cc35464B
+
+  let currFavouriteNumber = await (contract as any).retreive();
   console.log("Current Favorite Number: " + currFavouriteNumber);
   console.log("Updating favorite number...");
-  let transactionResponse = await contract.store(7);
+  let transactionResponse = await (contract as any).store("7");
+  // Waiting for Transaction Response
   let transactionReceipt = await transactionResponse.wait();
-  currFavouriteNumber = await contract.retreive();
+  currFavouriteNumber = await (contract as any).retreive();
   console.log("Updated Favourite Number: " + currFavouriteNumber);
 
   // * Getting Deployment Transaction
