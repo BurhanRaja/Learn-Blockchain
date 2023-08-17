@@ -3,8 +3,9 @@ import fs from "fs";
 import "dotenv/config";
 
 const account_key = process.env.ACCOUNT_KEY as string;
-const private_key = process.env.PRIVATE_KEY as string;
+// const private_key = process.env.PRIVATE_KEY as string;
 const rpc_url = process.env.RPC_URL;
+const private_key_password = process.env.PRIVATE_KEY_PASSWORD as string;
 
 interface Transaction {
   nonce: number;
@@ -17,8 +18,11 @@ interface Transaction {
 }
 
 async function main() {
-  const provider = new JsonRpcProvider(rpc_url);
-  const wallet = new Wallet(private_key, provider);
+  const provider = new JsonRpcProvider(rpc_url);  
+  // const wallet = new Wallet(private_key, provider);
+  const encryptedJson = fs.readFileSync("./.encryptedKey.json", "utf8");
+  let wallet = Wallet.fromEncryptedJsonSync(encryptedJson, private_key_password);
+  wallet = wallet.connect(provider);
 
   const abi = fs.readFileSync("./SimpleStorage_sol_SimpleStorage.abi", "utf8");
   const binary = fs.readFileSync(
