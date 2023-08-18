@@ -2,10 +2,10 @@ import { ContractFactory, JsonRpcProvider, Wallet } from "ethers";
 import fs from "fs";
 import "dotenv/config";
 
-const account_key = process.env.ACCOUNT_KEY as string;
-const private_key = process.env.PRIVATE_KEY as string;
-const rpc_url = process.env.RPC_URL;
-const private_key_password = process.env.PRIVATE_KEY_PASSWORD as string;
+const account_key = process.env.ACCOUNT_KEY!;
+const private_key = process.env.PRIVATE_KEY!;
+const rpc_url = process.env.RPC_URL!;
+const private_key_password = process.env.PRIVATE_KEY_PASSWORD!;
 
 interface Transaction {
   nonce: number;
