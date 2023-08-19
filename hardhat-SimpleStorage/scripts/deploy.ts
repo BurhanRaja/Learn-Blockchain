@@ -1,27 +1,41 @@
-import { ethers } from "hardhat";
+import { ethers, run, network } from "hardhat";
+import "dotenv/config";
+
+const etherscanAPIKey = process.env.ETHERSACN_API_KEY!;
 
 async function main() {
-  const currentTimestampInSeconds = Math.round(Date.now() / 1000);
-  const unlockTime = currentTimestampInSeconds + 60;
+  const SimpleStorageFactory = await ethers.getContractFactory("SimpleStorage");
+  console.log("Deploying Contract. Please Wait....");
 
-  const lockedAmount = ethers.parseEther("0.001");
+  const simpleStorage = await SimpleStorageFactory.deploy();
+  // const deployedCode = await simpleStorage.getDeployedCode();
+  const address = await simpleStorage.getAddress();
 
-  const lock = await ethers.deployContract("Lock", [unlockTime], {
-    value: lockedAmount,
-  });
+  console.log(`Contract Address: ${address}`);
+  // console.log(`Contract Deployed Code: ${deployedCode}`);
 
-  await lock.waitForDeployment();
-
-  console.log(
-    `Lock with ${ethers.formatEther(
-      lockedAmount
-    )}ETH and unlock timestamp ${unlockTime} deployed to ${lock.target}`
-  );
+  if (network.config.chainId === 11155111 && etherscanAPIKey) {
+    await simpleStorage.waitForDeployment();
+    await verify(address, []);
+  }
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+async function verify(contractAddress: string, args: Array<any>) {
+  console.log("Verifying Contract. Please Wait...");
+
+  try {
+    await run("verify:verify", {
+      address: contractAddress,
+      arguments: args,
+    });
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+main()
+  .then(() => process.exit(0))
+  .catch((err) => {
+    console.log(err);
+    process.exit(1);
+  });
