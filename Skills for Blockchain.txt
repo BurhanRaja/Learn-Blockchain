@@ -1,0 +1,8 @@
+Skills for Blockchain
+
+Learn how to build Smart Contracts.
+
+Blockchain - Ethereum
+Programming Language - Solidity
+Hardhat and Foundry - Local Environment
+Ether.js - Library
