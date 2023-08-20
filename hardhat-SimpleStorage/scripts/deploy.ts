@@ -14,10 +14,21 @@ async function main() {
   console.log(`Contract Address: ${address}`);
   // console.log(`Contract Deployed Code: ${deployedCode}`);
 
+  // https://sepolia.etherscan.io/address/0x07D9fA12c558F20afca1BB6c3Bb1126116BfbD4f#code
   if (network.config.chainId === 11155111 && etherscanAPIKey) {
-    await simpleStorage.waitForDeployment();
+    console.log("Waiting for block confirmation. Please wait....");
+    await simpleStorage.deploymentTransaction()?.wait(6);
     await verify(address, []);
   }
+
+  const myFavouriteNum = await simpleStorage.retreive();
+  console.log(`Current Value: ${myFavouriteNum}`);
+
+  // Update Value
+  const transactionResponse = await simpleStorage.store(7);
+  await transactionResponse.wait(1);
+  const updatedFavouriteNum = await simpleStorage.retreive();
+  console.log(`Updated Value: ${updatedFavouriteNum}`);
 }
 
 async function verify(contractAddress: string, args: Array<any>) {
