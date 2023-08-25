@@ -1,6 +1,7 @@
 import { HardhatUserConfig } from "hardhat/config";
 import "@nomicfoundation/hardhat-toolbox";
 import "hardhat-deploy";
+import "dotenv/config";
 
 const sepoliaURL = process.env.SEPOLIA_RPC_URL!;
 const sepoliaPrivateKey = process.env.SEPOLIA_PRIVATE_KEY!;
@@ -27,9 +28,11 @@ const config: HardhatUserConfig = {
   namedAccounts: {
     deployer: {
       default: 0,
-      
-    }
-  }
+    },
+    user: {
+      default: 1,
+    },
+  },
 };
 
 export default config;
