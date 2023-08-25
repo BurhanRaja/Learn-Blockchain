@@ -9,7 +9,7 @@ describe("SimpleStorage Tests", () => {
     simpleStorage = await simpleStorageFactory.deploy();
   });
 
-  it("Should return 0 fo favourite Number", async () => {
+  it("Should return 0 for favourite Number", async () => {
     const currentValue = await simpleStorage.retreive();
     const expectedValue = "0";
     assert.equal(currentValue.toString(), expectedValue);
@@ -23,5 +23,14 @@ describe("SimpleStorage Tests", () => {
 
     const currentValue = await simpleStorage.retreive();
     assert.equal(currentValue.toString(), expectedValue);
+  });
+
+  it("Should return [] from the listOfPeople", async () => {
+    const peopleList: Array<string> = [];
+    const currPeopleList = await simpleStorage.listOfPeople;
+
+    console.log(currPeopleList);
+
+    assert.equal(currPeopleList, peopleList);
   });
 });

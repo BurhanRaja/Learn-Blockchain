@@ -8,7 +8,7 @@ contract SimpleStorage {
         favouriteNum = _favouriteNumber;
     }
 
-    function retreive() public view returns(uint256) {
+    function retreive() public view returns (uint256) {
         return favouriteNum;
     }
 
@@ -17,7 +17,7 @@ contract SimpleStorage {
         string name;
     }
 
-    mapping (string => uint256) public personMap;
+    mapping(string => uint256) public personMap;
 
     Person[] public listOfPeople;
 
