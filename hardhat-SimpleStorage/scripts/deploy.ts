@@ -37,7 +37,7 @@ async function verify(contractAddress: string, args: Array<any>) {
   try {
     await run("verify:verify", {
       address: contractAddress,
-      arguments: args,
+      constructorArguments: args,
     });
   } catch (err) {
     console.log(err);

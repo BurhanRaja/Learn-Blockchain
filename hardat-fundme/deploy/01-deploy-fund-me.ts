@@ -2,6 +2,10 @@ import { network } from "hardhat";
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { developmentsChain, networkConfig } from "../helper-hardhat-config";
 import { DeployFunction } from "hardhat-deploy/dist/types";
+import verify from "../utils/verify";
+import "dotenv/config";
+
+let ethersacnAPI = process.env.ETHERSCAN_API_KEY;
 
 const deployFundMe: DeployFunction = async ({
   getNamedAccounts,
@@ -12,6 +16,7 @@ const deployFundMe: DeployFunction = async ({
   const chainId: number = network.config.chainId!;
 
   let ethUsdPriceFeedAddress;
+
   if (developmentsChain.includes(network.name)) {
     // Development Mock Aggregator
     const ethUsdAggregator = await get("MockV3Aggregator");
@@ -20,11 +25,21 @@ const deployFundMe: DeployFunction = async ({
     // Chainlink Real Aggregator
     ethUsdPriceFeedAddress = networkConfig[chainId]["ethUsdPriceFeedAddress"];
   }
+
+  const args = [ethUsdPriceFeedAddress];
   const fundMe = await deploy("FundMe", {
     from: deployer,
-    args: [ethUsdPriceFeedAddress],
+    args,
     log: true,
+    waitConfirmations: 6,
   });
+
+  console.log(args);
+  
+  if (!developmentsChain.includes(network.name) && ethersacnAPI) {
+    await verify(fundMe.address, args);
+  }
+
   log("-------------------------------------------------------");
 };
 

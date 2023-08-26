@@ -5,10 +5,11 @@ import "dotenv/config";
 
 const sepoliaURL = process.env.SEPOLIA_RPC_URL!;
 const sepoliaPrivateKey = process.env.SEPOLIA_PRIVATE_KEY!;
-const etherscanAPIKey = process.env.ETHERSACN_API_KEY!;
+const etherscanAPIKey = process.env.ETHERSCAN_API_KEY!;
 const coinmarketCapAPIKey = process.env.COINMARKETCAP_API_KEY!;
 
 const config: HardhatUserConfig = {
+  solidity: "0.8.19",
   networks: {
     sepolia: {
       url: sepoliaURL,
@@ -21,7 +22,6 @@ const config: HardhatUserConfig = {
       chainId: 31337,
     },
   },
-  solidity: "0.8.19",
   etherscan: {
     apiKey: etherscanAPIKey,
   },
@@ -32,6 +32,13 @@ const config: HardhatUserConfig = {
     user: {
       default: 1,
     },
+  },
+  gasReporter: {
+    enabled: false, // false when not working
+    outputFile: "./gas-report.txt",
+    noColors: true,
+    currency: "USD",
+    coinmarketcap: coinmarketCapAPIKey,
   },
 };
 
