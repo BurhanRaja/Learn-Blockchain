@@ -15,29 +15,31 @@ const deployFundMe: DeployFunction = async ({
   const { deployer } = await getNamedAccounts();
   const chainId: number = network.config.chainId!;
 
-  let ethUsdPriceFeedAddress;
+  let ethUsdPriceFeedAddress, fundMe;
 
   if (developmentsChain.includes(network.name)) {
     // Development Mock Aggregator
     const ethUsdAggregator = await get("MockV3Aggregator");
     ethUsdPriceFeedAddress = ethUsdAggregator.address;
+    fundMe = await deploy("FundMe", {
+      from: deployer,
+      args: [ethUsdPriceFeedAddress],
+      log: true,
+    });
   } else {
     // Chainlink Real Aggregator
     ethUsdPriceFeedAddress = networkConfig[chainId]["ethUsdPriceFeedAddress"];
-  }
 
-  const args = [ethUsdPriceFeedAddress];
-  const fundMe = await deploy("FundMe", {
-    from: deployer,
-    args,
-    log: true,
-    waitConfirmations: 6,
-  });
+    fundMe = await deploy("FundMe", {
+      from: deployer,
+      args: [ethUsdPriceFeedAddress],
+      log: true,
+      waitConfirmations: 6,
+    });
 
-  console.log(args);
-  
-  if (!developmentsChain.includes(network.name) && ethersacnAPI) {
-    await verify(fundMe.address, args);
+    if (!developmentsChain.includes(network.name) && ethersacnAPI) {
+      await verify(fundMe.address, [ethUsdPriceFeedAddress]);
+    }
   }
 
   log("-------------------------------------------------------");
