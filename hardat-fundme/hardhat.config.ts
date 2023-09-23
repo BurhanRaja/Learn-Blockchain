@@ -40,8 +40,8 @@ const config: HardhatUserConfig = {
     outputFile: "./gas-report.txt",
     noColors: true,
     currency: "USD",
-    // coinmarketcap: coinmarketCapAPIKey,
-    token: "MATIC"
+    coinmarketcap: coinmarketCapAPIKey,
+    token: "ETH"
   },
   mocha: {
     timeout: 100000,

@@ -14,10 +14,10 @@ contract FundMe {
     using PriceConverter for uint256;
 
     uint256 public constant MINIMUM_USD = 4e18;
-    AggregatorV3Interface public priceFeed; // PriceFeed Aggregator
+    AggregatorV3Interface public s_priceFeed; // s_priceFeed Aggregator
     address public immutable i_owner;
-    address[] public funders;
-    mapping(address => uint256) public addressToAmountFunded;
+    address[] public s_funders;
+    mapping(address => uint256) public s_addressToAmountFunded;
 
     modifier onlyOwner() {
         // require(msg.sender == i_owner);
@@ -26,9 +26,9 @@ contract FundMe {
     }
 
     // Get Price feed address
-    constructor(address priceFeedAddress) {
+    constructor(address s_priceFeedAddress) {
         i_owner = msg.sender;
-        priceFeed = AggregatorV3Interface(priceFeedAddress);
+        s_priceFeed = AggregatorV3Interface(s_priceFeedAddress);
     }
 
     // What if someone send money to us without initiating fund function
@@ -46,23 +46,22 @@ contract FundMe {
 
     function fund() public payable {
         require(
-            msg.value.getConversionRate(priceFeed) >= MINIMUM_USD,
+            msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD,
             "didn't send enough ETH."
         );
 
-        funders.push(msg.sender);
-        addressToAmountFunded[msg.sender] =
-            addressToAmountFunded[msg.sender] +
+        s_funders.push(msg.sender);
+        s_addressToAmountFunded[msg.sender] =
+            s_addressToAmountFunded[msg.sender] +
             msg.value;
     }
 
-    function withdraw() public onlyOwner {
-        uint256 i = 0;
-        for (i; i < funders.length; i++) {
-            addressToAmountFunded[funders[i]] = 0;
+    function withdraw() public payable onlyOwner {
+        for (uint256 i = 0; i < s_funders.length; i++) {
+            s_addressToAmountFunded[s_funders[i]] = 0;
         }
         // resetting the array
-        funders = new address[](0);
+        s_funders = new address[](0);
         // Withdraw all the ETH balance
 
         // ? transfer - limited Gas and throws Error
@@ -73,6 +72,19 @@ contract FundMe {
         // ? require(sendSuccess, "Send Failed");
 
         // call - All Gas and returns bool
+        (bool callSuccess, ) = payable(msg.sender).call{
+            value: address(this).balance
+        }("");
+        require(callSuccess, "Call Failed");
+    }
+
+    function cheaperWithdraw() public payable onlyOwner {
+        address[] memory funders = s_funders;
+        for (uint i = 0; i < funders.length; i++) {
+            s_addressToAmountFunded[funders[i]] = 0;
+        }
+        s_funders = new address[](0);
+
         (bool callSuccess, ) = payable(msg.sender).call{
             value: address(this).balance
         }("");
