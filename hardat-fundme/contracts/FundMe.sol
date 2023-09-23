@@ -3,6 +3,7 @@ pragma solidity ^0.8.18;
 
 import {PriceConverter} from "./PriceConverter.sol";
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
+import "hardhat/console.sol";
 
 error FundMe__NotOwner();
 
@@ -19,10 +20,8 @@ contract FundMe {
     mapping(address => uint256) public addressToAmountFunded;
 
     modifier onlyOwner() {
-        // require(msg.sender == i_owner, NotOwner());
-        if (msg.sender == i_owner) {
-            revert FundMe__NotOwner();
-        }
+        // require(msg.sender == i_owner);
+        if (msg.sender != i_owner) revert FundMe__NotOwner();
         _;
     }
 
@@ -50,6 +49,7 @@ contract FundMe {
             msg.value.getConversionRate(priceFeed) >= MINIMUM_USD,
             "didn't send enough ETH."
         );
+
         funders.push(msg.sender);
         addressToAmountFunded[msg.sender] =
             addressToAmountFunded[msg.sender] +

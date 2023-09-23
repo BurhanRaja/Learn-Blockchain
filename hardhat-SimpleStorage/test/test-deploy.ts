@@ -1,8 +1,8 @@
 import { ethers } from "hardhat";
 import { assert, expect } from "chai";
 
-describe("SimpleStorage Tests", () => {
-  let simpleStorageFactory, simpleStorage;
+describe("SimpleStorage Tests", async () => {
+  let simpleStorageFactory, simpleStorage: any;
 
   beforeEach(async () => {
     simpleStorageFactory = await ethers.getContractFactory("SimpleStorage");

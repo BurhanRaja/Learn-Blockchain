@@ -11,6 +11,7 @@ const coinmarketCapAPIKey = process.env.COINMARKETCAP_API_KEY!;
 
 const config: HardhatUserConfig = {
   solidity: "0.8.19",
+  defaultNetwork: "hardhat",
   networks: {
     sepolia: {
       url: sepoliaURL,
@@ -35,15 +36,16 @@ const config: HardhatUserConfig = {
     },
   },
   gasReporter: {
-    enabled: false, // false when not working
+    enabled: true, // false when not working
     outputFile: "./gas-report.txt",
     noColors: true,
     currency: "USD",
-    coinmarketcap: coinmarketCapAPIKey,
+    // coinmarketcap: coinmarketCapAPIKey,
+    token: "MATIC"
   },
   mocha: {
-    timeout: 100000
-  }
+    timeout: 100000,
+  },
 };
 
 export default config;

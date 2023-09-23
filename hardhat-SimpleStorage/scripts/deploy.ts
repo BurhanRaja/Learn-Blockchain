@@ -14,6 +14,7 @@ async function main() {
   console.log(`Contract Address: ${address}`);
   // console.log(`Contract Deployed Code: ${deployedCode}`);
 
+  // To verify the contract
   // https://sepolia.etherscan.io/address/0x07D9fA12c558F20afca1BB6c3Bb1126116BfbD4f#code
   if (network.config.chainId === 11155111 && etherscanAPIKey) {
     console.log("Waiting for block confirmation. Please wait....");

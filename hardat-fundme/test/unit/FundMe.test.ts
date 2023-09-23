@@ -1,8 +1,12 @@
-import { SignerWithAddress } from "@nomicfoundation/hardhat-ethers/signers";
 import { deployments, ethers, getNamedAccounts } from "hardhat";
 import { FundMe, MockV3Aggregator } from "../../typechain-types";
 import { assert, expect } from "chai";
 import { Address } from "hardhat-deploy/dist/types";
+import {
+  ContractTransactionReceipt,
+  ContractTransactionResponse,
+  BigNumberish,
+} from "ethers";
 
 describe("Fund Me", () => {
   let deployer: Address;
@@ -38,6 +42,7 @@ describe("Fund Me", () => {
     });
   });
 
+  // ------------------------------------ Fund ----------------------------------------------
   describe("Fund", () => {
     it("Reverts when not sending enough ETH.", async () => {
       await expect(fundMe.fund()).to.be.revertedWith("didn't send enough ETH.");
@@ -62,13 +67,97 @@ describe("Fund Me", () => {
       assert.equal(response.toString(), sendVal.toString());
     });
   });
-
+  // ------------------------------------ Withdraw ----------------------------------------------
   describe("Withdraw", async () => {
-    it("Update amount to 0 in Mappings(Address => Amount)", async () => {
+    beforeEach(async () => {
       await fundMe.fund({ value: sendVal });
+    });
+
+    it("Withdraw ETH from the single Founder", async () => {
+      const address = await fundMe.getAddress();
+
+      // Before Withdraw
+      const startingFundMeBalance: bigint = await ethers.provider.getBalance(
+        address
+      );
+      const startingDeployerBalance: bigint = await ethers.provider.getBalance(
+        deployer
+      );
+
+      const transactionResponse: ContractTransactionResponse =
+        await fundMe.withdraw();
+      const transactionReceipt: ContractTransactionReceipt =
+        (await transactionResponse.wait()) as ContractTransactionReceipt;
+
+      const { gasUsed, gasPrice } = transactionReceipt;
+      const findalGasCost = gasUsed * gasPrice;
+
+      // After Withdraw
+      const endingFundMeBalance: bigint = await ethers.provider.getBalance(
+        address
+      );
+      const endingDeployerBalance: bigint = await ethers.provider.getBalance(
+        deployer
+      );
+
+      assert.equal(endingFundMeBalance.toString(), "0");
+      assert.equal(
+        (startingFundMeBalance + startingDeployerBalance).toString(),
+        (endingDeployerBalance + findalGasCost).toString()
+      );
+    });
+
+    it("Update amount to 0 in Mappings(Address => Amount)", async () => {
       await fundMe.withdraw();
       const response = await fundMe.addressToAmountFunded(deployer);
-      assert.equal(response.toString(), "0");
+      expect(response).to.be.reverted;
+    });
+
+    it("Handle Multiple Funders Account and check if it resets", async () => {
+      const accounts = await ethers.getSigners();
+
+      // Looping through five accounts and adding funds
+      for (let i = 1; i < 5; i++) {
+        await fundMe.connect(accounts[i]).fund({ value: sendVal });
+      }
+
+      const address = await fundMe.getAddress();
+
+      // Before Withdraw
+      const startingFundMeBalance: bigint = await ethers.provider.getBalance(
+        address
+      );
+      const startingDeployerBalance: bigint = await ethers.provider.getBalance(
+        deployer
+      );
+
+      const transactionResponse: ContractTransactionResponse =
+        await fundMe.withdraw();
+      const transactionReceipt: ContractTransactionReceipt =
+        (await transactionResponse.wait()) as ContractTransactionReceipt;
+
+      const { gasUsed, gasPrice } = transactionReceipt;
+      const findalGasCost = gasUsed * gasPrice;
+
+      // After Withdraw
+      const endingFundMeBalance: bigint = await ethers.provider.getBalance(
+        address
+      );
+      const endingDeployerBalance: bigint = await ethers.provider.getBalance(
+        deployer
+      );
+
+      assert.equal(endingFundMeBalance.toString(), "0");
+      assert.equal(
+        (startingFundMeBalance + startingDeployerBalance).toString(),
+        (endingDeployerBalance + findalGasCost).toString()
+      );
+      for (let i = 1; i < 5; i++) {
+        const addressToAmountFunded = await fundMe.addressToAmountFunded(
+          accounts[i].address
+        );
+        assert.equal(addressToAmountFunded.toString(), "0");
+      }
     });
   });
 });

@@ -21,6 +21,7 @@ const deployFundMe: DeployFunction = async ({
     // Development Mock Aggregator
     const ethUsdAggregator = await get("MockV3Aggregator");
     ethUsdPriceFeedAddress = ethUsdAggregator.address;
+    
     fundMe = await deploy("FundMe", {
       from: deployer,
       args: [ethUsdPriceFeedAddress],
