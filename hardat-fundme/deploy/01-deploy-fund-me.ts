@@ -5,7 +5,8 @@ import { DeployFunction } from "hardhat-deploy/dist/types";
 import verify from "../utils/verify";
 import "dotenv/config";
 
-let ethersacnAPI = process.env.ETHERSCAN_API_KEY;
+// let ethersacnAPI = process.env.ETHERSCAN_API_KEY;
+let ethersacnAPI = false;
 
 const deployFundMe: DeployFunction = async ({
   getNamedAccounts,
@@ -21,7 +22,7 @@ const deployFundMe: DeployFunction = async ({
     // Development Mock Aggregator
     const ethUsdAggregator = await get("MockV3Aggregator");
     ethUsdPriceFeedAddress = ethUsdAggregator.address;
-    
+
     fundMe = await deploy("FundMe", {
       from: deployer,
       args: [ethUsdPriceFeedAddress],
@@ -37,6 +38,8 @@ const deployFundMe: DeployFunction = async ({
       log: true,
       waitConfirmations: 6,
     });
+
+    console.log(fundMe.address);
 
     if (!developmentsChain.includes(network.name) && ethersacnAPI) {
       await verify(fundMe.address, [ethUsdPriceFeedAddress]);
