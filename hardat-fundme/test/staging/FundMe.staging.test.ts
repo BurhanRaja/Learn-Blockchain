@@ -11,7 +11,7 @@ developmentsChain.includes(network.name)
       let fundMe: FundMe;
       const sendVal = ethers.parseEther("0.5");
 
-      before(async () => {
+      beforeEach(async () => {
         deployer = (await getNamedAccounts()).deployer;
         const deploymentResults = await deployments.fixture(["all"]);
         // Fund Me

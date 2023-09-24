@@ -5,7 +5,6 @@ import { Address } from "hardhat-deploy/dist/types";
 import {
   ContractTransactionReceipt,
   ContractTransactionResponse,
-  BigNumberish,
 } from "ethers";
 import { developmentsChain } from "../../helper-hardhat-config";
 
@@ -39,7 +38,7 @@ import { developmentsChain } from "../../helper-hardhat-config";
 
       describe("constructor", function () {
         it("sets the aggregator addresses correctly", async () => {
-          const response = await fundMe.s_priceFeed();
+          const response = await fundMe.getPriceFeed();
           const address = await mockV3Aggregator.getAddress();
           assert.equal(response, address);
         });
@@ -55,24 +54,24 @@ import { developmentsChain } from "../../helper-hardhat-config";
 
         it("Updated the amount to Mappings(Address => Amount)", async () => {
           await fundMe.fund({ value: sendVal });
-          const response = await fundMe.s_addressToAmountFunded(deployer);
+          const response = await fundMe.getAddressToAmount(deployer);
           assert.equal(response.toString(), sendVal.toString());
         });
 
         it("Updated the address to funders array", async () => {
           await fundMe.fund({ value: sendVal });
-          const funder = await fundMe.s_funders(0);
+          const funder = await fundMe.getFunders(0);
           assert.equal(funder, deployer);
         });
 
         it("funders and addressToAmount in Sync when amount added", async () => {
           await fundMe.fund({ value: sendVal });
-          const funder = await fundMe.s_funders(0);
-          const response = await fundMe.s_addressToAmountFunded(funder);
+          const funder = await fundMe.getFunders(0);
+          const response = await fundMe.getAddressToAmount(funder);
           assert.equal(response.toString(), sendVal.toString());
         });
       });
-      // ------------------------------------ Withdraw ----------------------------------------------
+      // ------------------------------------ All Withdraw ----------------------------------------------
       describe("Withdraw", async () => {
         beforeEach(async () => {
           await fundMe.fund({ value: sendVal });
@@ -137,7 +136,7 @@ import { developmentsChain } from "../../helper-hardhat-config";
 
         it("Update amount to 0 in Mappings(Address => Amount)", async () => {
           await fundMe.withdraw();
-          const response = await fundMe.s_addressToAmountFunded(deployer);
+          const response = await fundMe.getAddressToAmount(deployer);
           expect(response).to.be.reverted;
         });
 
@@ -175,7 +174,7 @@ import { developmentsChain } from "../../helper-hardhat-config";
             (endingDeployerBalance + findalGasCost).toString()
           );
           for (let i = 1; i < 6; i++) {
-            const addressToAmountFunded = await fundMe.s_addressToAmountFunded(
+            const addressToAmountFunded = await fundMe.getAddressToAmount(
               accounts[i].address
             );
             assert.equal(addressToAmountFunded.toString(), "0");
@@ -216,7 +215,7 @@ import { developmentsChain } from "../../helper-hardhat-config";
             (endingDeployerBalance + findalGasCost).toString()
           );
           for (let i = 1; i < 6; i++) {
-            const addressToAmountFunded = await fundMe.s_addressToAmountFunded(
+            const addressToAmountFunded = await fundMe.getAddressToAmount(
               accounts[i].address
             );
             assert.equal(addressToAmountFunded.toString(), "0");
