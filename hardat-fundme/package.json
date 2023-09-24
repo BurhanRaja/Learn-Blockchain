@@ -6,6 +6,16 @@
   "dependencies": {
     "hardhat": "^2.17.1"
   },
+  "scripts": {
+    "node": "yarn hardhat node",
+    "test": "yarn hardhat test",
+    "test:local": "yarn hardat test --network localhost",
+    "test:staging": "yarn hardat test --network sepolia",
+    "script:fund": "yarn hardhat run scripts/fund.ts",
+    "script:withdraw": "yarn hardhat run scripts/withdraw.ts",
+    "compile": "yarn hardat compile", 
+    "compile:sepolia": "yarn hardat compile --network sepolia"
+  },
   "devDependencies": {
     "@chainlink/contracts": "^0.6.1",
     "@nomicfoundation/hardhat-chai-matchers": "^2.0.0",
