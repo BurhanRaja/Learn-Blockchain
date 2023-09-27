@@ -1,5 +1,6 @@
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomiclabs/hardhat-etherscan";
+import "@nomicfoundation/hardhat-toolbox";
+import "@nomicfoundation/hardhat-ethers";
 import "hardhat-deploy";
 import "solidity-coverage";
 import "hardhat-gas-reporter";
