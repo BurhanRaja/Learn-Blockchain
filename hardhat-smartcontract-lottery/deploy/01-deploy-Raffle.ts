@@ -5,15 +5,16 @@ import {
   ContractTransactionReceipt,
   ContractTransactionResponse,
 } from "ethers";
-// import {VRFCoordinatorV2MockInterface} from "../typechain-types/@chainlink/contracts/src/v0.8/mocks/VRFCoordinatorV2Mock";
+import { DeployFunction } from "hardhat-deploy/dist/types";
+import { VRFCoordinatorV2InterfaceInterface } from "../typechain-types/@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface";
 
 const VRF_FUND_AMOUNT = ethers.parseEther("2");
 
-export default async function ({
+const deployRaffleFunc: DeployFunction = async function ({
   getNamedAccounts,
   deployments,
 }: HardhatRuntimeEnvironment) {
-  const { deploy, log, get } = deployments;
+  const { deploy, log, get, fixture } = deployments;
   const { deployer } = await getNamedAccounts();
   const chainId = network.config.chainId!;
 
@@ -23,25 +24,26 @@ export default async function ({
 
   if (developmentChains.includes(network.name)) {
     console.log("Deploying Raffle on Local Network.");
-    const vrfCoordinator = await ethers.getContractAt(
-      "VRFCoordinatorV2Mock",
-      deployer
-    );
+    const vrfCoordinator = await get("VRFCoordinatorV2Mock");
+    vrfCoordinatorAddress = vrfCoordinator.address;
 
-    vrfCoordinatorAddress = await vrfCoordinator.getAddress();
+    const vrfCoordinatorContract = await ethers.getContractAt(
+      "VRFCoordinatorV2Mock",
+      vrfCoordinatorAddress
+    );
     // Creating Subsctiption Programatically
     const transactionResponse: ContractTransactionResponse =
-      await vrfCoordinator.createSubscription();
+      await vrfCoordinatorContract?.createSubscription();
     const transactionReceipt = await transactionResponse.wait(1);
+    
     // Getting SubsId;
-    console.log(transactionResponse);
-    console.log(transactionReceipt);
-
     const result = transactionReceipt?.toJSON();
-    console.log(result);
+    subscriptionId = result?.logs[0]["args"][0];
 
-    subscriptionId = transactionReceipt?.events[0].args.subId;
-    await vrfCoordinator.fundSubscription(subscriptionId, VRF_FUND_AMOUNT); // Adding FUNDS to the Coordinator to Run the Random Num Generator
+    await vrfCoordinatorContract.fundSubscription(
+      subscriptionId,
+      VRF_FUND_AMOUNT
+    ); // Adding FUNDS to the Coordinator to Run the Random Num Generator
   } else {
     console.log("Deploying Raffle on Testnet Network.");
     vrfCoordinatorAddress = networkCofig[chainId]["vrfCoordinator"];
@@ -71,6 +73,7 @@ export default async function ({
 
   console.log("Raffle Deployed.");
   console.log("------------------------------------------------");
-}
+};
 
+export default deployRaffleFunc;
 export const tags = ["all", "raffle"];
