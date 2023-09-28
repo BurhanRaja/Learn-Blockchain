@@ -15,7 +15,8 @@ export default async function ({
   console.log("Deploying Mocks....");
 
   if (chainId === 31337) {
-    const vrfCoordinatorV2Mock = await deploy("VRFCoordinatorMock", {
+    await deploy("VRFCoordinatorV2Mock", {
+      contract: "VRFCoordinatorV2Mock",
       from: deployer,
       args: [BASE_FEE, GAS_PRICE_LIMIT],
       log: true,

@@ -1,11 +1,10 @@
 import { HardhatUserConfig } from "hardhat/config";
-import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-ethers";
 import "hardhat-deploy";
 import "solidity-coverage";
 import "hardhat-gas-reporter";
-import "hardhat-contract-sizer";
 import "dotenv/config";
+import "@typechain/hardhat";
 
 const sepoliaURL = process.env.SEPOLIA_RPC_URL!;
 const sepoliaPrivateKey = process.env.SEPOLIA_PRIVATE_KEY!;
