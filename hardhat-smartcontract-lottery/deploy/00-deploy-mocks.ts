@@ -9,13 +9,12 @@ const deployMockFunk: DeployFunction = async function ({
   getNamedAccounts,
   deployments,
 }: HardhatRuntimeEnvironment) {
-  const { deploy, log } = deployments;
-  const { deployer } = await getNamedAccounts();
   const chainId = network.config.chainId;
-
-  console.log("Deploying Mocks....");
-
   if (chainId === 31337) {
+    const { deploy, log } = deployments;
+    const { deployer } = await getNamedAccounts();
+
+    console.log("Deploying Mocks....");
     const contract = await deploy("VRFCoordinatorV2Mock", {
       contract: "VRFCoordinatorV2Mock",
       from: deployer,
@@ -23,10 +22,9 @@ const deployMockFunk: DeployFunction = async function ({
       log: true,
       waitConfirmations: 1,
     });
+    console.log("Mocks Deployed.");
+    console.log("--------------------------------------------");
   }
-
-  console.log("Mocks Deployed.");
-  console.log("--------------------------------------------");
 };
 
 export default deployMockFunk;

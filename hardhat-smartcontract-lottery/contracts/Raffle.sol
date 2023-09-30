@@ -97,12 +97,12 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         bool hasPlayers = (s_players.length > 0);
         bool hasBalance = address(this).balance > 0;
         upkeepNeeded = (isOpen && timePassed && hasPlayers && hasBalance);
-        return (upkeepNeeded, "");
+        return (upkeepNeeded, "0x");
     }
 
     // Request Random Winner
     function performUpkeep(bytes calldata /* performData */) external override {
-        (bool upKeepNeeded, ) = checkUpkeep("");
+        (bool upKeepNeeded, ) = checkUpkeep("0x");
         if (!upKeepNeeded) {
             revert Raffle__UpKeepNotNeeded(
                 address(this).balance,

@@ -1,6 +1,7 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { ethers, network } from "hardhat";
 import { developmentChains, networkCofig } from "../helper-hardhat.config";
+import verify from "../utils/verify";
 import {
   ContractTransactionReceipt,
   ContractTransactionResponse,
@@ -20,8 +21,7 @@ const deployRaffleFunc: DeployFunction = async function ({
   console.log("Deploying Raffle...");
 
   let vrfCoordinatorAddress: string,
-    subscriptionId: bigint,
-    vrfCoordinatorContract;
+    subscriptionId: bigint;
 
   if (developmentChains.includes(network.name)) {
     console.log("Deploying Raffle on Local Network.");
@@ -78,6 +78,12 @@ const deployRaffleFunc: DeployFunction = async function ({
       vrfCoordinatorAddress
     );
     await vrfCoordinatorV2Mock.addConsumer(subscriptionId, raffle.address);
+  }
+
+  if (!developmentChains.includes(network.name)) {
+    console.log("Verifying the Raffle Contract...");
+    await verify(raffle.address, args);
+    console.log("Raffle Contract Verified.");
   }
 
   console.log("Raffle Deployed.");

@@ -24,22 +24,26 @@ const config: HardhatUserConfig = {
       url: sepoliaURL,
       accounts: [sepoliaPrivateKey],
       chainId: 11155111,
+      saveDeployments: true,
     },
     localhost: {
       url: "http://127.0.0.1:8545/",
       chainId: 31337,
     },
   },
+  etherscan: {
+    apiKey: etherscanAPIKey,
+  },
   typechain: {
     outDir: "typechains",
     target: "ethers-v6",
   },
   gasReporter: {
-    enabled: false,
+    enabled: true,
     noColors: true,
     currency: "USD",
     outputFile: "./gas-report.txt",
-    coinmarketcap: "",
+    coinmarketcap: coinmarketCapAPIKey,
     token: "ETH",
   },
   namedAccounts: {
@@ -49,6 +53,9 @@ const config: HardhatUserConfig = {
     player: {
       default: 1,
     },
+  },
+  mocha: {
+    timeout: 500000,
   },
 };
 
