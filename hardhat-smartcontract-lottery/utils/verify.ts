@@ -1,8 +1,8 @@
 import { run } from "hardhat";
 
-const verify = async (contractAddress: string, args: Array<any>) => {
-  console.log("Verifying Contract. Please Wait...");
-  
+const verify = async function (contractAddress: string, args: Array<any>) {
+  console.log("Verifying Contract. Please wait...");
+
   try {
     await run("verify:verify", {
       address: contractAddress,

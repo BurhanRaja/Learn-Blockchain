@@ -7,7 +7,7 @@ interface NetworkConfigObj {
   keepersUpdateInterval?: string;
   raffleEntranceFee?: bigint;
   callbackGasLimit?: string;
-  subscriptionId?: string;
+  subscriptionId?: string | bigint;
 }
 
 interface NetworkConfig {
@@ -21,7 +21,7 @@ export const networkCofig: NetworkConfig = {
     gasLane:
       "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c",
     keepersUpdateInterval: "30",
-    raffleEntranceFee: ethers.parseEther("0.01"),
+    raffleEntranceFee: ethers.parseEther("0.1"),
     callbackGasLimit: "50000",
     subscriptionId: "0",
   },
@@ -30,7 +30,7 @@ export const networkCofig: NetworkConfig = {
     gasLane:
       "0x474e34a077df58807dbe9c96d3c009b23b3c6d0cce433e59bbf5b34f823bc56c",
     keepersUpdateInterval: "30",
-    raffleEntranceFee: ethers.parseEther("0.01"),
+    raffleEntranceFee: ethers.parseEther("0.1"),
     callbackGasLimit: "50000",
   },
 };

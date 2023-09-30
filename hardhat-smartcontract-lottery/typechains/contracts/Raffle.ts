@@ -29,6 +29,7 @@ export interface RaffleInterface extends Interface {
       | "checkUpkeep"
       | "enterRaffle"
       | "getEntranceFeed"
+      | "getInterval"
       | "getLastTimeStamp"
       | "getNumberOfWords"
       | "getOnePlayer"
@@ -57,6 +58,10 @@ export interface RaffleInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getEntranceFeed",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getInterval",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -106,6 +111,10 @@ export interface RaffleInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getEntranceFeed",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getInterval",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -235,6 +244,8 @@ export interface Raffle extends BaseContract {
 
   getEntranceFeed: TypedContractMethod<[], [bigint], "view">;
 
+  getInterval: TypedContractMethod<[], [bigint], "view">;
+
   getLastTimeStamp: TypedContractMethod<[], [bigint], "view">;
 
   getNumberOfWords: TypedContractMethod<[], [bigint], "view">;
@@ -273,6 +284,9 @@ export interface Raffle extends BaseContract {
   ): TypedContractMethod<[], [void], "payable">;
   getFunction(
     nameOrSignature: "getEntranceFeed"
+  ): TypedContractMethod<[], [bigint], "view">;
+  getFunction(
+    nameOrSignature: "getInterval"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "getLastTimeStamp"

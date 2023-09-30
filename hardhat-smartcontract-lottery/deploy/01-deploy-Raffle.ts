@@ -6,7 +6,6 @@ import {
   ContractTransactionResponse,
 } from "ethers";
 import { DeployFunction } from "hardhat-deploy/dist/types";
-import { VRFCoordinatorV2InterfaceInterface } from "../typechain-types/@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface";
 
 const VRF_FUND_AMOUNT = ethers.parseEther("2");
 
@@ -14,13 +13,15 @@ const deployRaffleFunc: DeployFunction = async function ({
   getNamedAccounts,
   deployments,
 }: HardhatRuntimeEnvironment) {
-  const { deploy, log, get, fixture } = deployments;
+  const { deploy, get } = deployments;
   const { deployer } = await getNamedAccounts();
   const chainId = network.config.chainId!;
 
   console.log("Deploying Raffle...");
 
-  let vrfCoordinatorAddress, subscriptionId;
+  let vrfCoordinatorAddress: string,
+    subscriptionId: bigint,
+    vrfCoordinatorContract;
 
   if (developmentChains.includes(network.name)) {
     console.log("Deploying Raffle on Local Network.");
@@ -35,10 +36,10 @@ const deployRaffleFunc: DeployFunction = async function ({
     const transactionResponse: ContractTransactionResponse =
       await vrfCoordinatorContract?.createSubscription();
     const transactionReceipt = await transactionResponse.wait(1);
-    
+
     // Getting SubsId;
     const result = transactionReceipt?.toJSON();
-    subscriptionId = result?.logs[0]["args"][0];
+    subscriptionId = result?.logs[0]?.args[0];
 
     await vrfCoordinatorContract.fundSubscription(
       subscriptionId,
@@ -46,8 +47,8 @@ const deployRaffleFunc: DeployFunction = async function ({
     ); // Adding FUNDS to the Coordinator to Run the Random Num Generator
   } else {
     console.log("Deploying Raffle on Testnet Network.");
-    vrfCoordinatorAddress = networkCofig[chainId]["vrfCoordinator"];
-    subscriptionId = networkCofig[chainId]["subscriptionId"];
+    vrfCoordinatorAddress = networkCofig[chainId]["vrfCoordinator"] as string;
+    subscriptionId = networkCofig[chainId]["subscriptionId"] as bigint;
   }
 
   // Define Arguements
@@ -71,9 +72,17 @@ const deployRaffleFunc: DeployFunction = async function ({
     waitConfirmations: 1,
   });
 
+  if (developmentChains.includes(network.name)) {
+    const vrfCoordinatorV2Mock = await ethers.getContractAt(
+      "VRFCoordinatorV2Mock",
+      vrfCoordinatorAddress
+    );
+    await vrfCoordinatorV2Mock.addConsumer(subscriptionId, raffle.address);
+  }
+
   console.log("Raffle Deployed.");
   console.log("------------------------------------------------");
 };
 
 export default deployRaffleFunc;
-export const tags = ["all", "raffle"];
+deployRaffleFunc.tags = ["all", "raffle"];

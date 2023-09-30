@@ -1,4 +1,5 @@
 import { HardhatUserConfig } from "hardhat/config";
+import "@nomicfoundation/hardhat-toolbox";
 import "@nomicfoundation/hardhat-ethers";
 import "hardhat-deploy";
 import "solidity-coverage";
@@ -28,6 +29,18 @@ const config: HardhatUserConfig = {
       url: "http://127.0.0.1:8545/",
       chainId: 31337,
     },
+  },
+  typechain: {
+    outDir: "typechains",
+    target: "ethers-v6",
+  },
+  gasReporter: {
+    enabled: false,
+    noColors: true,
+    currency: "USD",
+    outputFile: "./gas-report.txt",
+    coinmarketcap: "",
+    token: "ETH",
   },
   namedAccounts: {
     deployer: {

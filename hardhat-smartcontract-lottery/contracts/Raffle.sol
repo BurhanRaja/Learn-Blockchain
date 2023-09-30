@@ -5,6 +5,7 @@ pragma solidity ^0.8.18;
 import "@chainlink/contracts/src/v0.8/interfaces/VRFCoordinatorV2Interface.sol";
 import "@chainlink/contracts/src/v0.8/vrf/VRFConsumerBaseV2.sol";
 import "@chainlink/contracts/src/v0.8/automation/interfaces/KeeperCompatibleInterface.sol";
+import 'hardhat/console.sol';
 
 error Raffle__NotEnoughEthEntered();
 error Raffle__TransferFailed();
@@ -92,7 +93,6 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
         returns (bool upkeepNeeded, bytes memory /* performData */)
     {
         bool isOpen = (RaffleState.OPEN == s_raffleState);
-        // block.timestamp = last block timestamp > interval
         bool timePassed = ((block.timestamp - s_lastTimeStamp) > i_interval);
         bool hasPlayers = (s_players.length > 0);
         bool hasBalance = address(this).balance > 0;
@@ -111,6 +111,7 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
             );
         }
         s_raffleState = RaffleState.CALCULATING;
+
         uint256 requestId = i_vrfCoordinator.requestRandomWords(
             i_gasLane,
             i_subscriptionId,
@@ -171,5 +172,9 @@ contract Raffle is VRFConsumerBaseV2, KeeperCompatibleInterface {
 
     function getRequestConfirmations() public pure returns (uint256) {
         return REQUEST_CONFIRMATIONS;
+    }
+
+    function getInterval() public view returns (uint256) {
+        return i_interval;
     }
 }

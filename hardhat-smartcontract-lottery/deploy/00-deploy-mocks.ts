@@ -30,4 +30,4 @@ const deployMockFunk: DeployFunction = async function ({
 };
 
 export default deployMockFunk;
-export const tags = ["all", "mocks"];
+deployMockFunk.tags = ["all", "mocks"];
